@@ -187,73 +187,74 @@ void ImageLabel::handleSiteEvent(SiteQueue *tmp,
     {
         //printf("handleSiteEvent...1\n");
         beachline->insert(tmp->p);
+        dcel->face->insert(tmp->p);
         return;
     }
-    BeachLine *upon = beachline->search(tmp->p);
-    if(upon->circleEvent)
+    // 处理degenerateCase
+    BeachLine *upon = beachline->isDegenerateCase(tmp->p);
+    if(upon)
     {
-        eventqueue->del(upon->circleEvent);
-        upon->circleEvent = NULL;
+        BeachLine *b1 = upon->insert(tmp->p);
+        Face *f1 = dcel->face->insert(b1->p);
+        Face *f2 = dcel->face->insert(upon->p);
+        Edge *e1 = dcel->edge->insert(f1);
+        Edge *e2 = dcel->edge->insert(f2);
+        e1->twin = e2;
+        e2->twin = e1;
     }
-    //printf("handleSiteEvent...2\n");
-    BeachLine *b1 = upon->insert(tmp->p);
-    //printf("handleSiteEvent...2.1\n");
-    BeachLine *b2 = b1->insert(upon->p);
-    //printf("handleSiteEvent...2.2\n");
-    //if exist the face then return the pointer
-    //else insert the new face and return
-    Face *f1 = dcel->face->insert(b1->p);
-    //printf("handleSiteEvent...2.3\n");
-    Face *f2 = dcel->face->insert(b2->p);
-    //printf("handleSiteEvent...2.4\n");
-    Edge *e1 = dcel->edge->insert(f1);
-    //printf("handleSiteEvent...2.5\n");
-    Edge *e2 = dcel->edge->insert(f2);
-    //printf("handleSiteEvent...2.6\n");
-    e1->twin = e2;
-    e2->twin = e1;
-
-
-    QPointF *c1 = beachline->checkCircleL(upon->prev,upon,b1);
-    if(c1)
+    else
     {
-        //printf("(%lf,%lf)\n",c1->x(),c1->y());
-        QPointF *p1 = getLowestPoint(c1,b1);
-        EventQueue *ce1 = eventqueue->insert(c1,p1,upon);
-        upon->circleEvent = ce1;
-        //printf("handleSiteEvent...4\n");
-    }
-    /*
-    upon = upon->prev;
+        upon = beachline->search(tmp->p);
+        if(upon->circleEvent)
+        {
+            eventqueue->del(upon->circleEvent);
+            upon->circleEvent = NULL;
+        }
+        //printf("handleSiteEvent...2\n");
+        BeachLine *b1 = upon->insert(tmp->p);
+        //printf("handleSiteEvent...2.1\n");
+        BeachLine *b2 = b1->insert(upon->p);
+        //printf("handleSiteEvent...2.2\n");
+        //if exist the face then return the pointer
+        //else insert the new face and return
+        Face *f1 = dcel->face->insert(b1->p);
+        //printf("handleSiteEvent...2.3\n");
+        Face *f2 = dcel->face->insert(b2->p);
+        //printf("handleSiteEvent...2.4\n");
+        Edge *e1 = dcel->edge->insert(f1);
+        //printf("handleSiteEvent...2.5\n");
+        Edge *e2 = dcel->edge->insert(f2);
+        //printf("handleSiteEvent...2.6\n");
+        e1->twin = e2;
+        e2->twin = e1;
 
-    while(upon && upon->prev && (upon->prev->p.y()==upon->p.y()))
-    {
-        c1 = beachline->checkCircleL(upon->prev,upon,b1);
+
+        QPointF *c1 = beachline->checkCircleL(upon->prev,upon,b1);
         if(c1)
         {
-//            printf("(%lf,%lf)\n",c1->x(),c1->y());
+            //printf("(%lf,%lf)\n",c1->x(),c1->y());
             QPointF *p1 = getLowestPoint(c1,b1);
             EventQueue *ce1 = eventqueue->insert(c1,p1,upon);
             upon->circleEvent = ce1;
             //printf("handleSiteEvent...4\n");
         }
+        /*
         upon = upon->prev;
-    }
-    */
-    QPointF *c2 = beachline->checkCircleR(b1,b2,b2->next);
-    if(c2)
-    {
-        //printf("(%lf,%lf)\n",c2->x(),c2->y());
-        QPointF *p2 = getLowestPoint(c2,b2);
-        EventQueue *ce2 = eventqueue->insert(c2,p2,b2);
-        b2->circleEvent = ce2;
-        //printf("handleSiteEvent...5\n");
-    }
-    /*
-    b2 = b2->next;
 
-    while(b2 && b2->next && (b2->next->p.y()==b2->p.y()))
-    {
+        while(upon && upon->prev && (upon->prev->p.y()==upon->p.y()))
+        {
+            c1 = beachline->checkCircleL(upon->prev,upon,b1);
+            if(c1)
+            {
+    //            printf("(%lf,%lf)\n",c1->x(),c1->y());
+                QPointF *p1 = getLowestPoint(c1,b1);
+                EventQueue *ce1 = eventqueue->insert(c1,p1,upon);
+                upon->circleEvent = ce1;
+                //printf("handleSiteEvent...4\n");
+            }
+            upon = upon->prev;
+        }
+        */
         QPointF *c2 = beachline->checkCircleR(b1,b2,b2->next);
         if(c2)
         {
@@ -263,9 +264,25 @@ void ImageLabel::handleSiteEvent(SiteQueue *tmp,
             b2->circleEvent = ce2;
             //printf("handleSiteEvent...5\n");
         }
+        /*
         b2 = b2->next;
+
+        while(b2 && b2->next && (b2->next->p.y()==b2->p.y()))
+        {
+            QPointF *c2 = beachline->checkCircleR(b1,b2,b2->next);
+            if(c2)
+            {
+                //printf("(%lf,%lf)\n",c2->x(),c2->y());
+                QPointF *p2 = getLowestPoint(c2,b2);
+                EventQueue *ce2 = eventqueue->insert(c2,p2,b2);
+                b2->circleEvent = ce2;
+                //printf("handleSiteEvent...5\n");
+            }
+            b2 = b2->next;
+        }
+        */
     }
-    */
+
 }
 
 void ImageLabel::handleCircleEvent(SiteQueue *sitequeue,

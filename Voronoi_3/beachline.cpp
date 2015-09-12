@@ -122,6 +122,18 @@ QPointF* BeachLine::getCircleCenter(BeachLine *b1, BeachLine *b2, BeachLine *b3)
     return center;
 }
 
+BeachLine *BeachLine::isDegenerateCase(QPointF p)
+{
+    BeachLine *q = this;
+    while(q->next && q->next->p.y() == p.y())
+        q = q->next;
+    // DegenerateCase
+    if(!q->next)
+        return q;
+    else
+        return NULL;
+}
+
 void BeachLine::del(BeachLine *p)
 {
     p->prev->next = p->next;

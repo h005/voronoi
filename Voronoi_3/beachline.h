@@ -18,11 +18,13 @@ public:
     QPointF* checkCircleR(BeachLine *b1,BeachLine *b2,BeachLine *b3);
     void del(BeachLine* p);
     QPointF* getCircleCenter(BeachLine *b1,BeachLine *b2,BeachLine *b3);
+    BeachLine* isDegenerateCase(QPointF p);
 
     QPointF p;
     BeachLine *prev;
     BeachLine *next;
     EventQueue *circleEvent;
+
 };
 
 #endif // BEACHLINE_H
