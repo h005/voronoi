@@ -67,6 +67,14 @@ QPointF* BeachLine::checkCircleL(BeachLine *b1, BeachLine *b2, BeachLine *b3)
     double tmpres = v1.x()*v2.y()-v2.x()*v1.y();
 
     //if ok then
+//    if(tmpres)
+    /*
+     * 检测b1,b2,b3的共圆，
+     * 主要是检测beachLine b2所对应的抛物线是否会消失，
+     * 虽然任意给定三条beachLine 只要tmpres非零，是一定
+     * 可以得到圆心的，但是未必是与b2对应
+     * 所以需要加入这个条件来限制
+     */
     if(tmpres<0)
     {
         center = getCircleCenter(b1,b2,b3);
@@ -77,6 +85,7 @@ QPointF* BeachLine::checkCircleL(BeachLine *b1, BeachLine *b2, BeachLine *b3)
         center = NULL;
         return center;
     }
+
 }
 
 QPointF* BeachLine::checkCircleR(BeachLine *b1, BeachLine *b2, BeachLine *b3)
@@ -89,6 +98,8 @@ QPointF* BeachLine::checkCircleR(BeachLine *b1, BeachLine *b2, BeachLine *b3)
     QPointF v1 = b3->p-b1->p;
     QPointF v2 = b2->p-b1->p;
     double tmpres = v1.x()*v2.y()-v2.x()*v1.y();
+
+//    if(tmpres)
     if(tmpres<0)
     {
         center = getCircleCenter(b1,b2,b3);
@@ -99,6 +110,7 @@ QPointF* BeachLine::checkCircleR(BeachLine *b1, BeachLine *b2, BeachLine *b3)
         center = NULL;
         return center;
     }
+
 }
 
 QPointF* BeachLine::getCircleCenter(BeachLine *b1, BeachLine *b2, BeachLine *b3)
